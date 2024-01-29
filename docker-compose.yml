@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  db:
+    ports:
+      - 5432:5432
+    image: postgres:12-alpine
+    container_name: fastapiapp_demodb
+    restart: always
+    environment:
+      - POSTGRES_DB=$POSTGRES_DB
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+    networks:
+      - fastapiappnetwork
+
+  app:
+    image: fast
+    container_name: fastapiapp_demoapp
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/home
+    depends_on:
+      - db
+    networks:
+      - fastapiappnetwork
+    environment:
+      - POSTGRES_DB=$POSTGRES_DB
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_HOST=$POSTGRES_HOST
+      - POSTGRES_PORT=$POSTGRES_PORT
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+
+networks:
+  fastapiappnetwork:
