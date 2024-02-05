@@ -6,7 +6,6 @@ from sqlalchemy import (
     Integer,
     Boolean,
     UniqueConstraint,
-    PrimaryKeyConstraint,
     DateTime
 )
 from sqlalchemy.orm import relationship
@@ -35,12 +34,9 @@ class User(Base):
     date_create = Column(DateTime, nullable=False)
     date_modify = Column(DateTime, nullable=False)
 
-    PrimaryKeyConstraint("id", name="pk_user_id")
     UniqueConstraint("email", name="uq_user_email")
     UniqueConstraint("username", name="uq_user_username")
 
-    def __repr__(self):
-        return "<User {id} is {role!r}>".format(id=self.id, role=self.role)
 
     @staticmethod
     def hash_password(password) -> bytes:

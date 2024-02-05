@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Union
 
 from datetime import datetime
 
@@ -16,8 +17,13 @@ class PostSchema(PostBaseSchema):
     class Config:
         orm_mode = True
 
+class PostUpdateSchema(BaseModel):
+    text: Union[str, None]
+    progress: Union[int, None]
 
-class LikeSchema(BaseModel):
+class LikeBaseSchema(BaseModel):
     user_id: int
     post_id: int
+
+class LikeSchema(LikeBaseSchema):
     date_create: datetime

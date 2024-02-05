@@ -1,5 +1,7 @@
 import jwt
 
+from config.settings import SECRET_KEY
 
-def decode_token(token: str) -> str:
-    return jwt.decode(token, "ApplicationSecretKey", algorithms="HS256")
+
+def decode_token(token: str) -> dict:
+    return jwt.decode(token, SECRET_KEY, algorithms="HS256")

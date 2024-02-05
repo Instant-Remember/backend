@@ -3,8 +3,7 @@ from sqlalchemy import (
     Integer,
     String,
     DateTime,
-    ForeignKey,
-    PrimaryKeyConstraint
+    ForeignKey
 )
 from sqlalchemy.orm import relationship
 
@@ -22,8 +21,3 @@ class Goal(Base):
     goal_posts = relationship('Post')
     date_create = Column(DateTime, nullable=False)
     date_modify = Column(DateTime, nullable=False)
-
-    PrimaryKeyConstraint("id", name="pk_goal_id")
-
-    def __repr__(self):
-        return "<`Goal {name!r} User -> {owner!r}>".format(name=self.name, owner=self.owner_id)

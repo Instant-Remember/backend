@@ -4,8 +4,7 @@ from sqlalchemy import (
     String,
     DateTime,
     ForeignKey,
-    SmallInteger,
-    PrimaryKeyConstraint
+    SmallInteger
 )
 from sqlalchemy.orm import relationship
 
@@ -22,8 +21,3 @@ class Post(Base):
     goal = relationship('Goal')
     date_create = Column(DateTime, nullable=False)
     date_modify = Column(DateTime, nullable=False)
-
-    PrimaryKeyConstraint("id", name="pk_post_id")
-
-    def __repr__(self):
-        return "<Post - {id!r} from Goal {goal_id!r}>".format(id=self.id, goal_id=self.goal_id)

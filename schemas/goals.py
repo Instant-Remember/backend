@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 from typing import Union
 
 from datetime import datetime
@@ -19,5 +19,5 @@ class GoalSchema(GoalBaseSchema):
 
 
 class GoalUpdateSchema(BaseModel):
-    email: Union[EmailStr, None]
-    full_name: Union[str, None]
+    name: Union[str, None]
+    description: Union[str, None]

@@ -9,6 +9,9 @@ class UserBaseSchema(BaseModel):
     email: EmailStr
     first_name: str
     last_name: str
+    about: Union[str, None]
+    status: Union[int, None]
+    role: str
     date_create: datetime
     date_modify: datetime
 
@@ -31,5 +34,17 @@ class UserLoginSchema(BaseModel):
 
 
 class UserUpdateSchema(BaseModel):
-    email: Union[EmailStr, None]
-    full_name: Union[str, None]
+    username: Union[str, None]
+    first_name: Union[str, None]
+    last_name: Union[str, None]
+    about: Union[str, None]
+    status: Union[int, None]
+
+class SubscribeBaseSchema(BaseModel):
+    publisher_id: int
+    follower_id: int
+
+class SubscribeSchema(SubscribeBaseSchema):
+    date_create: datetime
+
+

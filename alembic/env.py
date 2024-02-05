@@ -8,6 +8,12 @@ from alembic import context
 from config.db_initializer import Base
 from config.settings import DATABASE_URL
 
+from models.users import User
+from models.likes import Like
+from models.posts import Post
+from models.goals import Goal
+from models.subscriptions import Subscription
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
