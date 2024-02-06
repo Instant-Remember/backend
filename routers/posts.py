@@ -48,10 +48,10 @@ def create_post(
 def get_post_by_id(
         id: int,
         session: Session = Depends(get_db)
-) -> Post:
+) -> PostSchema:
 
     try:
-        post: Post = post_db_services.get_post_by_id(
+        post: PostSchema = post_db_services.get_post_by_id(
             session=session, id=id
         )
 

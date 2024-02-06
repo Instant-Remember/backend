@@ -37,7 +37,7 @@ def create_goal(
 def get_goal_by_id(
         id: int,
         session: Session = Depends(get_db)
-) -> Goal:
+) -> GoalSchema:
 
     try:
         goal: Goal = goal_db_services.get_goal_by_id(
