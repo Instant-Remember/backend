@@ -31,6 +31,10 @@ services:
       - POSTGRES_HOST=$POSTGRES_HOST
       - POSTGRES_PORT=$POSTGRES_PORT
       - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+      - SMTP_USER=$SMTP_USER
+      - SMTP_PASS=$SMTP_PASS
+      - SMTP_HOST=$SMTP_HOST
+      - SMTP_PORT=$SMTP_PORT
 
 networks:
   fastapiappnetwork:

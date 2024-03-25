@@ -10,6 +10,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 
+from services.security.token import set_expiration
 from config.db_initializer import Base
 from config.settings import SECRET_KEY
 
@@ -49,6 +50,17 @@ class User(Base):
         return {
             "access_token": jwt.encode(
                 {"id": self.id},
+                algorithm="HS256",
+                key=SECRET_KEY
+            )
+        }
+
+    def generate_reset_token(self) -> dict:
+        return {
+            "reset_token": jwt.encode(
+                {"id": self.id,
+                 "exp": set_expiration(30)
+                },
                 algorithm="HS256",
                 key=SECRET_KEY
             )

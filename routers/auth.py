@@ -5,9 +5,11 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import NoResultFound
 
 from config.db_initializer import get_db
-from schemas.users import CreateUserSchema, UserSchema
+from schemas.users import CreateUserSchema, UserSchema, ResetUserPasswordSchema
 from models.users import User
 from services.db import users as user_db_services
+from services.mailer.mailer import Mailer
+from services.security.password_generator import generate
 
 router = APIRouter()
 
@@ -21,6 +23,7 @@ def signup(
 ) -> UserSchema:
 
     payload.hashed_password = User.hash_password(payload.hashed_password)
+    payload.email = payload.email.lower()
 
     return user_db_services.create_user(session, user=payload)
 
@@ -33,7 +36,7 @@ def login(
 
     try:
         user: UserSchema = user_db_services.get_user(
-            session=session, email=payload.username
+            session=session, email=payload.username.lower()
         )
 
     except NoResultFound:
@@ -50,3 +53,27 @@ def login(
         )
 
     return user.generate_token()
+
+
+@router.post('/reset')
+def reset_password(
+    payload: ResetUserPasswordSchema,
+    session: Session = Depends(get_db),
+):
+
+    try:
+        user = user_db_services.get_user(session, payload.email)
+    except:
+        raise HTTPException(
+            status_code=status.HTTP_406_NOT_ACCEPTABLE,
+            detail="Invalid email"
+        )
+
+    new_password = generate()
+    Mailer.send_email(payload.email, new_password)
+    user.hashed_password = User.hash_password(new_password)
+    user_db_services.edit_user(session, user)
+
+    return {
+        "status": "ok"
+    }
