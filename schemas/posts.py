@@ -27,3 +27,17 @@ class LikeBaseSchema(BaseModel):
 
 class LikeSchema(LikeBaseSchema):
     date_create: datetime
+
+class CommentBaseSchema(BaseModel):
+    text: str
+    post_id: int
+    owner_id: int
+    date_create: datetime
+    date_modify: datetime
+
+class CommentSchema(CommentBaseSchema):
+    id: int
+
+    class Config:
+        orm_mode = True
+

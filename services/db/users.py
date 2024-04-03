@@ -22,6 +22,9 @@ def get_user_by_id(session: Session, id: int) -> UserSchema:
 
     return session.query(User).filter(User.id == id).one()
 
+def get_goals(session: Session, user_id: int):
+    user = session.query(User).filter(User.id == user_id).first()
+    return user.user_goals
 
 def edit_user(session: Session, user) -> UserSchema:
     session.add(user)

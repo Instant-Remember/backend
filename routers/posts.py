@@ -9,9 +9,11 @@ import datetime as dt
 from config.db_initializer import get_db
 from schemas.posts import PostSchema, PostBaseSchema, PostUpdateSchema, LikeSchema, LikeBaseSchema
 from models.posts import Post
+from models.comments import Comment
 from services.db import posts as post_db_services
 from services.db import goals as goal_db_services
 from services.db import likes as like_db_services
+from services.db import comments as comment_db_service
 from services.security.token import decode_token
 
 
@@ -63,6 +65,24 @@ def get_post_by_id(
 
     return post
 
+@router.get("/goal/{id}")
+def get_posts_by_goal(
+        goal_id: int,
+        session: Session = Depends(get_db)
+) -> list[PostSchema]:
+
+    try:
+        goals = goal_db_services.get_posts_by_goal_id(
+            session=session, goal_id=goal_id
+        )
+
+    except NoResultFound:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Not found."
+        )
+
+    return goals
 
 @router.patch("/{id}")
 def patch_post(
@@ -161,3 +181,27 @@ def unlike_post(
     like_db_services.unlike(session, like)
 
     return {'message': 'ok'}
+
+@router.post('/comment/create')
+def create_comment(
+    payload: PostBaseSchema = Body(),
+    token: str = Depends(oauth2_scheme),
+    session: Session = Depends(get_db)
+) -> PostSchema:
+
+    try:
+        goal = goal_db_services.get_goal_by_id(session, payload.goal_id)
+
+    except NoResultFound:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Not found."
+        )
+
+    if decode_token(token)['id'] != goal.owner_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Forbidden"
+        )
+
+    return post_db_services.create_post(session, post=payload)

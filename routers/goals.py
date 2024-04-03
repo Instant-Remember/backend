@@ -10,6 +10,7 @@ from config.db_initializer import get_db
 from schemas.goals import GoalSchema, GoalBaseSchema, GoalUpdateSchema
 from models.goals import Goal
 from services.db import goals as goal_db_services
+from services.db import users as user_db_services
 from services.security.token import decode_token
 
 
@@ -51,6 +52,25 @@ def get_goal_by_id(
         )
 
     return goal
+
+@router.get("/user/{user_id}")
+def get_user_goals(
+        user_id: int,
+        session: Session = Depends(get_db)
+):
+
+    try:
+        goals = user_db_services.get_goals(
+            session=session, user_id=user_id
+        )
+
+    except NoResultFound:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Not found."
+        )
+
+    return goals
 
 
 @router.patch("/{id}")

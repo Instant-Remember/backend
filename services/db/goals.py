@@ -14,8 +14,12 @@ def create_goal(session: Session, goal: GoalBaseSchema) -> GoalSchema:
 
 
 def get_goal_by_id(session: Session, id: int) -> GoalSchema:
-
     return session.query(Goal).filter(Goal.id == id).one()
+
+
+def get_posts_by_goal_id(session: Session, goal_id: int) -> list[GoalSchema]:
+    goal = session.query(Goal).filter(Goal.id == goal_id).first()
+    return goal.goal_posts
 
 
 def edit_goal(session: Session, goal: Goal) -> None:
