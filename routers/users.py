@@ -69,6 +69,26 @@ def delete_current_user(
     return {"status": "ok", "message": "User was deleted"}
 
 
+@router.get("/me/goals")
+def get_current_user_goals(
+    token: str = Depends(oauth2_scheme), session: Session = Depends(get_db)
+):
+
+    user_id = decode_token(token)["id"]
+
+    return user_db_services.get_goals(session=session, user_id=user_id)
+
+
+@router.get("/me/posts")
+def get_current_user_posts(
+    token: str = Depends(oauth2_scheme), session: Session = Depends(get_db)
+):
+
+    user_id = decode_token(token)["id"]
+
+    return post_db_services.get_all_user_posts(session=session, user_id=user_id)
+
+
 @router.get("/profile/{id}/goals")
 def get_user_goals(user_id: int, session: Session = Depends(get_db)):
     try:

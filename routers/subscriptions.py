@@ -94,3 +94,36 @@ def get_profile_subscriptions(id: int, session: Session = Depends(get_db)):
         )
 
     return subscription_db_services.get_subscriptions(session, id)
+
+
+@router.get("/profile/{id}/is_subscriber")
+def is_subscriber(id: int, token: str = Depends(oauth2_scheme), session: Session = Depends(get_db)):
+    try:
+        user_db_services.get_user_by_id(session, id)
+    except NoResultFound:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found."
+        )
+
+    try:
+        subscription_db_services.check(session, id, decode_token(token)["id"])
+    except NoResultFound:
+        return {"status": "ok", "result": False}
+
+    return {"status": "ok", "result": True}
+
+@router.get("/profile/{id}/is_subscription")
+def is_subscription(id: int, token: str = Depends(oauth2_scheme), session: Session = Depends(get_db)):
+    try:
+        user_db_services.get_user_by_id(session, id)
+    except NoResultFound:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found."
+        )
+
+    try:
+        subscription_db_services.check(session, decode_token(token)["id"], id)
+    except NoResultFound:
+        return {"status": "ok", "result": False}
+
+    return {"status": "ok", "result": True}

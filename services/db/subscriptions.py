@@ -21,8 +21,8 @@ def check(session: Session, user_id, author_id):
     db_sub = (
         session.query(Subscription)
         .filter(
-            Subscription.publisher_id == author_id.publisher_id,
-            Subscription.follower_id == user_id.follower_id,
+            Subscription.publisher_id == author_id,
+            Subscription.follower_id == user_id,
         )
         .one()
     )

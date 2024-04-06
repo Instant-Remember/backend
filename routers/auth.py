@@ -2,7 +2,7 @@ from fastapi import APIRouter, Body, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import NoResultFound
+from sqlalchemy.exc import NoResultFound, IntegrityError
 
 from config.db_initializer import get_db
 from schemas.users import (
@@ -25,13 +25,17 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 @router.post("/signup")
 def signup(
     payload: CreateUserSchema = Body(), session: Session = Depends(get_db)
-) -> UserSchema:
+) -> UserSchema | dict:
 
     payload.hashed_password = User.hash_password(payload.hashed_password)
     payload.email = payload.email.lower()
 
-    return user_db_services.create_user(session, user=payload)
+    try:
+        user = user_db_services.create_user(session, user=payload)
+    except IntegrityError:
+        return {"status": "error", "message": "User is already exist."}
 
+    return user
 
 @router.post("/login")
 def login(
