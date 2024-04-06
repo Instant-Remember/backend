@@ -33,7 +33,7 @@ def signup(
     try:
         user = user_db_services.create_user(session, user=payload)
     except IntegrityError:
-        return {"status": "error", "message": "User is already exist."}
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User is already exist.")
 
     return user
 
