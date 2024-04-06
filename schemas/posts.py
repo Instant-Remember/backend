@@ -14,26 +14,32 @@ class PostBaseSchema(BaseModel):
 
 class PostSchema(PostBaseSchema):
     id: int
+
     class Config:
         orm_mode = True
+
 
 class PostUpdateSchema(BaseModel):
     text: Union[str, None]
     progress: Union[int, None]
 
+
 class LikeBaseSchema(BaseModel):
     user_id: int
     post_id: int
 
+
 class LikeSchema(LikeBaseSchema):
     date_create: datetime
+
 
 class CommentBaseSchema(BaseModel):
     text: str
     post_id: int
-    owner_id: int
+    user_id: int
     date_create: datetime
     date_modify: datetime
+
 
 class CommentSchema(CommentBaseSchema):
     id: int
@@ -41,3 +47,6 @@ class CommentSchema(CommentBaseSchema):
     class Config:
         orm_mode = True
 
+
+class CommentUpdateSchema(BaseModel):
+    text: Union[str, None]

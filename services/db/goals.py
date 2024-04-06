@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 
 from models.goals import Goal
 from schemas.goals import GoalBaseSchema, GoalSchema
@@ -31,3 +32,11 @@ def delete_goal(session: Session, id: int) -> None:
     db_goal = session.query(Goal).filter(Goal.id == id).one()
     session.delete(db_goal)
     session.commit()
+
+
+def search_goals(session: Session, query: str):
+    return (
+        session.query(Goal)
+        .filter(or_(Goal.name.icontains(query), Goal.description.icontains(query)))
+        .all()
+    )

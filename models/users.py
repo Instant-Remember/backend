@@ -6,7 +6,7 @@ from sqlalchemy import (
     Integer,
     Boolean,
     UniqueConstraint,
-    DateTime
+    DateTime,
 )
 from sqlalchemy.orm import relationship
 
@@ -30,7 +30,8 @@ class User(Base):
     about = Column(String(50), nullable=True)
     status = Column(SmallInteger, nullable=True)
     user_goals = relationship("Goal", back_populates="owner")
-    user_comments = relationship("Comment", viewonly=True)
+    user_comments = relationship("Comment", back_populates="user")
+    user_likes = relationship("Like", back_populates="user")
     role = Column(String(15), nullable=False, default="USER")
     is_active = Column(Boolean, default=False)
     date_create = Column(DateTime, nullable=False)
@@ -39,30 +40,27 @@ class User(Base):
     UniqueConstraint("email", name="uq_user_email")
     UniqueConstraint("username", name="uq_user_username")
 
-
     @staticmethod
-    def hash_password(password) -> bytes:
+    def hash_password(password: str) -> bytes:
         return bcrypt.hashpw(password.encode(), bcrypt.gensalt())
 
     def validate_password(self, password) -> bool:
-        return self.hashed_password == bcrypt.hashpw(password.encode(), self.hashed_password)
+        return self.hashed_password == bcrypt.hashpw(
+            password.encode(), self.hashed_password
+        )
 
     def generate_token(self) -> dict:
         return {
             "access_token": jwt.encode(
-                {"id": self.id},
-                algorithm="HS256",
-                key=SECRET_KEY
+                {"id": self.id}, algorithm="HS256", key=SECRET_KEY
             )
         }
 
     def generate_reset_token(self) -> dict:
         return {
             "reset_token": jwt.encode(
-                {"id": self.id,
-                 "exp": set_expiration(30)
-                },
+                {"id": self.id, "exp": set_expiration(30)},
                 algorithm="HS256",
-                key=SECRET_KEY
+                key=SECRET_KEY,
             )
         }

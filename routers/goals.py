@@ -8,9 +8,8 @@ import datetime as dt
 
 from config.db_initializer import get_db
 from schemas.goals import GoalSchema, GoalBaseSchema, GoalUpdateSchema
-from models.goals import Goal
+from schemas.posts import PostSchema
 from services.db import goals as goal_db_services
-from services.db import users as user_db_services
 from services.security.token import decode_token
 
 
@@ -18,59 +17,31 @@ router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 
-@router.post('/create')
+@router.post("/")
 def create_goal(
     payload: GoalBaseSchema = Body(),
     token: str = Depends(oauth2_scheme),
-    session: Session = Depends(get_db)
+    session: Session = Depends(get_db),
 ) -> GoalSchema:
 
-    if decode_token(token)['id'] != payload.owner_id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Forbidden"
-        )
+    if decode_token(token)["id"] != payload.owner_id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
 
     return goal_db_services.create_goal(session, goal=payload)
 
 
 @router.get("/{id}")
-def get_goal_by_id(
-        id: int,
-        session: Session = Depends(get_db)
-) -> GoalSchema:
+def get_goal(id: int, session: Session = Depends(get_db)) -> GoalSchema:
 
     try:
-        goal: Goal = goal_db_services.get_goal_by_id(
-            session=session, id=id
-        )
+        goal = goal_db_services.get_goal_by_id(session=session, id=id)
 
     except NoResultFound:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Not found."
+            status_code=status.HTTP_404_NOT_FOUND, detail="Goal not found."
         )
 
     return goal
-
-@router.get("/user/{user_id}")
-def get_user_goals(
-        user_id: int,
-        session: Session = Depends(get_db)
-):
-
-    try:
-        goals = user_db_services.get_goals(
-            session=session, user_id=user_id
-        )
-
-    except NoResultFound:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Not found."
-        )
-
-    return goals
 
 
 @router.patch("/{id}")
@@ -78,7 +49,7 @@ def patch_goal(
     id: int,
     payload: GoalUpdateSchema,
     token: str = Depends(oauth2_scheme),
-    session: Session = Depends(get_db)
+    session: Session = Depends(get_db),
 ) -> dict:
 
     try:
@@ -86,15 +57,11 @@ def patch_goal(
 
     except NoResultFound:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Not found."
+            status_code=status.HTTP_404_NOT_FOUND, detail="Goal not found."
         )
 
     if goal_db.owner_id != decode_token(token)["id"]:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Forbidden"
-        )
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
 
     for name, value in payload.model_dump().items():
         setattr(goal_db, name, value)
@@ -103,24 +70,33 @@ def patch_goal(
 
     goal_db_services.edit_goal(session=session, goal=goal_db)
 
-    return {"message": "ok"}
+    return {"status": "ok", "message": "Goal was edit."}
 
 
 @router.delete("/{id}")
 def delete_goal(
-    id: int,
-    token: str = Depends(oauth2_scheme),
-    session: Session = Depends(get_db)
+    id: int, token: str = Depends(oauth2_scheme), session: Session = Depends(get_db)
 ) -> dict:
 
     goal = goal_db_services.get_goal_by_id(session, id)
 
     if goal.owner_id != decode_token(token)["id"]:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Forbidden"
-        )
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
 
     goal_db_services.delete_goal(session, id)
 
-    return {"message": "Deleted"}
+    return {"status": "ok", "message": "Goal was deleted"}
+
+
+@router.get("/{id}/posts")
+def get_goal_posts(id: int, session: Session = Depends(get_db)) -> list[PostSchema]:
+
+    try:
+        posts = goal_db_services.get_posts_by_goal_id(session=session, goal_id=id)
+
+    except NoResultFound:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Goal not found."
+        )
+
+    return posts

@@ -13,10 +13,28 @@ def follow(session: Session, subscription: SubscribeSchema) -> SubscribeSchema:
     return db_subscription
 
 
-def unfollow(session: Session, subscription: SubscribeBaseSchema) -> None:
-    db_sub = session.query(Subscription).filter(
-        Subscription.publisher_id == subscription.publisher_id,
-        Subscription.follower_id == subscription.follower_id
-    ).one()
+def unfollow(session: Session, db_sub) -> None:
     session.delete(db_sub)
     session.commit()
+
+def check(session: Session, user_id, author_id):
+    db_sub = (
+        session.query(Subscription)
+        .filter(
+            Subscription.publisher_id == author_id.publisher_id,
+            Subscription.follower_id == user_id.follower_id,
+        )
+        .one()
+    )
+
+    return db_sub
+
+
+def get_subscribers(session: Session, user_id):
+    return (
+        session.query(Subscription).filter(Subscription.publisher_id == user_id).all()
+    )
+
+
+def get_subscriptions(session: Session, user_id):
+    return session.query(Subscription).filter(Subscription.follower_id == user_id).all()

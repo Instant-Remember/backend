@@ -13,6 +13,7 @@ from models.likes import Like
 from models.posts import Post
 from models.goals import Goal
 from models.subscriptions import Subscription
+from models.comments import Comment
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

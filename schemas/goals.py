@@ -14,6 +14,7 @@ class GoalBaseSchema(BaseModel):
 
 class GoalSchema(GoalBaseSchema):
     id: int
+
     class Config:
         orm_mode = True
 

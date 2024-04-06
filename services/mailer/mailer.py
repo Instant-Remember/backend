@@ -4,6 +4,8 @@ import smtplib
 
 
 from email.message import EmailMessage
+
+
 class Mailer:
     __host = SMTP["HOST"]
     __port = SMTP["PORT"]
@@ -15,9 +17,9 @@ class Mailer:
         message = EmailMessage()
 
         message.set_content(m)
-        message['Subject'] = 'Test'
-        message['From'] = "instantremember@yandex.ru"
-        message['To'] = email
+        message["Subject"] = "Test"
+        message["From"] = "instantremember@yandex.ru"
+        message["To"] = email
 
         mailer = smtplib.SMTP_SSL(Mailer.__host, Mailer.__port)
         mailer.login(Mailer.__user, Mailer.__password)

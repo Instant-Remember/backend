@@ -35,3 +35,12 @@ def delete_post(session: Session, post_id: int) -> None:
     db_post = session.query(Post).filter(Post.id == post_id).one()
     session.delete(db_post)
     session.commit()
+
+
+def get_all_user_posts(session: Session, user_id):
+    user_goals = session.query(Goal).filter(Goal.owner_id == user_id).all()
+    posts = []
+    for i in user_goals:
+        posts += i.goal_posts
+
+    return posts

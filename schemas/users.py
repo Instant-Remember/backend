@@ -40,17 +40,24 @@ class UserUpdateSchema(BaseModel):
     about: Union[str, None]
     status: Union[int, None]
 
+
 class GetResetTokenSchema(BaseModel):
     email: str
 
+
 class ResetUserPasswordSchema(BaseModel):
     email: str
+
+
+class ChangePasswordSchema(BaseModel):
+    new_password: str
+    re_password: str
+
 
 class SubscribeBaseSchema(BaseModel):
     publisher_id: int
     follower_id: int
 
+
 class SubscribeSchema(SubscribeBaseSchema):
     date_create: datetime
-
-
