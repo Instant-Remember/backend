@@ -24,10 +24,13 @@ def create_goal(
     session: Session = Depends(get_db),
 ) -> GoalSchema:
 
-    if decode_token(token)["id"] != payload.owner_id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
+    goal = payload.dict()
+    goal['owner_id'] = decode_token(token)["id"]
+    now = dt.datetime.now(dt.UTC)
+    goal['date_create'] = now
+    goal['date_modify'] = now
 
-    return goal_db_services.create_goal(session, goal=payload)
+    return goal_db_services.create_goal(session, goal=goal)
 
 
 @router.get("/{id}")

@@ -5,8 +5,8 @@ from models.posts import Post
 from schemas.posts import PostBaseSchema, PostSchema
 
 
-def create_post(session: Session, post: PostBaseSchema) -> PostSchema:
-    db_post = Post(**post.dict())
+def create_post(session: Session, post: dict) -> PostSchema:
+    db_post = Post(**post)
     session.add(db_post)
     session.commit()
     session.refresh(db_post)

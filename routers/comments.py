@@ -36,10 +36,13 @@ def create_comment(
             status_code=status.HTTP_404_NOT_FOUND, detail="Post not exist."
         )
 
-    if decode_token(token)["id"] != payload.user_id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
+    comment = payload.dict()
+    comment['user_id'] = decode_token(token)["id"]
+    now = dt.datetime.now(dt.UTC)
+    comment['date_create'] = now
+    comment['date_modify'] = now
 
-    return comment_db_services.create_comment(session, comment=payload)
+    return comment_db_services.create_comment(session, comment=comment)
 
 
 @router.patch("/comment/{id}")

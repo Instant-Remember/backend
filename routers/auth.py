@@ -17,6 +17,8 @@ from services.mailer.mailer import Mailer
 from services.security.password_generator import generate
 from services.security.token import decode_token
 
+import datetime as dt
+
 router = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
@@ -29,9 +31,13 @@ def signup(
 
     payload.hashed_password = User.hash_password(payload.hashed_password)
     payload.email = payload.email.lower()
+    user = payload.dict()
+    now = dt.datetime.now(dt.UTC)
+    user['date_create'] = now
+    user['date_modify'] = now
 
     try:
-        user = user_db_services.create_user(session, user=payload)
+        user = user_db_services.create_user(session, user=user)
     except IntegrityError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User is already exist.")
 
@@ -88,8 +94,7 @@ def change_password(
     token: str = Depends(oauth2_scheme),
     session: Session = Depends(get_db),
 ):
-
-    user = decode_token(token)["id"]
+    user = user_db_services.get_user_by_id(session, decode_token(token)["id"])
 
     if payload.new_password == payload.re_password:
         user.hashed_password = User.hash_password(payload.new_password)

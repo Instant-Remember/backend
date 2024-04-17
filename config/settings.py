@@ -18,5 +18,11 @@ SMTP = {
     "PORT": os.getenv("SMTP_PORT"),
 }
 
+S3 = {
+    "KEY_ID": os.getenv("S3_KEY_ID"),
+    "SECRET_KEY": os.getenv("S3_SECRET_KEY"),
+    "BUCKET_NAME": os.getenv("S3_BUCKET_NAME")
+}
+
 
 SECRET_KEY = secrets.token_hex(32)

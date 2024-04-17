@@ -5,8 +5,8 @@ from models.posts import Post
 from schemas.posts import CommentBaseSchema, CommentSchema
 
 
-def create_comment(session: Session, comment: CommentBaseSchema) -> CommentSchema:
-    db_comment = Comment(**comment.dict())
+def create_comment(session: Session, comment: dict) -> CommentSchema:
+    db_comment = Comment(**comment)
     session.add(db_comment)
     session.commit()
     session.refresh(db_comment)

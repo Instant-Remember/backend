@@ -8,12 +8,12 @@ class PostBaseSchema(BaseModel):
     text: str
     progress: int
     goal_id: int
-    date_create: datetime
-    date_modify: datetime
 
 
 class PostSchema(PostBaseSchema):
     id: int
+    date_create: datetime
+    date_modify: datetime
 
     class Config:
         orm_mode = True
@@ -36,13 +36,13 @@ class LikeSchema(LikeBaseSchema):
 class CommentBaseSchema(BaseModel):
     text: str
     post_id: int
-    user_id: int
-    date_create: datetime
-    date_modify: datetime
 
 
 class CommentSchema(CommentBaseSchema):
     id: int
+    user_id: int
+    date_create: datetime
+    date_modify: datetime
 
     class Config:
         orm_mode = True

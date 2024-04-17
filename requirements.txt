@@ -9,3 +9,4 @@ psycopg2-binary==2.9.5
 email-validator>=1.0.3
 pyjwt
 python-multipart
+boto3

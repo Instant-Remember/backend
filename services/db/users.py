@@ -5,8 +5,8 @@ from models.users import User
 from schemas.users import CreateUserSchema, UserSchema
 
 
-def create_user(session: Session, user: CreateUserSchema) -> UserSchema:
-    db_user = User(**user.dict())
+def create_user(session: Session, user: dict) -> UserSchema:
+    db_user = User(**user)
     session.add(db_user)
     session.commit()
     session.refresh(db_user)

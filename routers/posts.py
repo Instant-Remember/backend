@@ -35,7 +35,12 @@ def create_post(
     if decode_token(token)["id"] != goal.owner_id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
 
-    return post_db_services.create_post(session, post=payload)
+    post = payload.dict()
+    now = dt.datetime.now(dt.UTC)
+    post['date_create'] = now
+    post['date_modify'] = now
+
+    return post_db_services.create_post(session, post=post)
 
 
 @router.get("/{id}")

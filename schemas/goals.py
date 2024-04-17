@@ -7,13 +7,13 @@ from datetime import datetime
 class GoalBaseSchema(BaseModel):
     name: str
     description: str
-    owner_id: int
-    date_create: datetime
-    date_modify: datetime
 
 
 class GoalSchema(GoalBaseSchema):
     id: int
+    owner_id: int
+    date_create: datetime
+    date_modify: datetime
 
     class Config:
         orm_mode = True

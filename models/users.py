@@ -29,6 +29,7 @@ class User(Base):
     last_name = Column(String(25), nullable=False)
     about = Column(String(50), nullable=True)
     status = Column(SmallInteger, nullable=True)
+    profile_photo = Column(String, nullable=True)
     user_goals = relationship("Goal", back_populates="owner")
     user_comments = relationship("Comment", back_populates="user")
     user_likes = relationship("Like", back_populates="user")

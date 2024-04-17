@@ -9,11 +9,6 @@ class UserBaseSchema(BaseModel):
     email: EmailStr
     first_name: str
     last_name: str
-    about: Union[str, None]
-    status: Union[int, None]
-    role: str
-    date_create: datetime
-    date_modify: datetime
 
 
 class CreateUserSchema(UserBaseSchema):
@@ -23,6 +18,12 @@ class CreateUserSchema(UserBaseSchema):
 class UserSchema(UserBaseSchema):
     id: int
     is_active: bool = Field(default=False)
+    profile_photo: Union[str, None]
+    role: str = Field(default='USER')
+    about: Union[str, None]
+    status: Union[int, None]
+    date_create: datetime
+    date_modify: datetime
 
     class Config:
         orm_mode = True

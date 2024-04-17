@@ -5,8 +5,8 @@ from models.goals import Goal
 from schemas.goals import GoalBaseSchema, GoalSchema
 
 
-def create_goal(session: Session, goal: GoalBaseSchema) -> GoalSchema:
-    db_goal = Goal(**goal.dict())
+def create_goal(session: Session, goal: dict) -> GoalSchema:
+    db_goal = Goal(**goal)
     session.add(db_goal)
     session.commit()
     session.refresh(db_goal)

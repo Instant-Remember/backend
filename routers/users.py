@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile
 from fastapi.security import OAuth2PasswordBearer
 
 from sqlalchemy.orm import Session
@@ -10,6 +10,10 @@ from schemas.users import UserSchema, UserUpdateSchema
 from services.db import users as user_db_services
 from services.db import posts as post_db_services
 from services.security.token import decode_token
+
+from services.storage.object_storage import upload_file
+
+import datetime as dt
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
@@ -51,6 +55,8 @@ def patch_current_user(
 
     for name, value in payload.model_dump().items():
         setattr(user, name, value)
+
+    user.date_modify = dt.datetime.now(dt.UTC)
 
     user_db_services.edit_user(session=session, user=user)
 
@@ -111,3 +117,24 @@ def get_user_posts(id: int, session: Session = Depends(get_db)):
         )
 
     return post_db_services.get_all_user_posts(session=session, user_id=id)
+
+
+@router.post('/upload')
+def upload_profile_photo(
+        file: UploadFile,
+        token: str = Depends(oauth2_scheme),
+        session: Session = Depends(get_db)
+):
+    user = user_db_services.get_user_by_id(
+        session=session, id=decode_token(token)["id"]
+    )
+
+    filename = file.filename.split(".")[-1]
+    success = upload_file(f"{user.id}.{filename}", file.file)
+    if success:
+        user.profile_photo = success
+        user.date_modify = dt.datetime.now(dt.UTC)
+        user_db_services.edit_user(session=session, user=user)
+        return {"status": "ok", "message": f"Photo was uploaded. {success}"}
+    else:
+        return {"status": "failed", "message": "Upload error"}
