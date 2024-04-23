@@ -9,6 +9,7 @@ from config.db_initializer import get_db
 from schemas.users import UserSchema, UserUpdateSchema
 from services.db import users as user_db_services
 from services.db import posts as post_db_services
+from services.db import subscriptions as subscription_db_services
 from services.security.token import decode_token
 
 from services.storage.object_storage import upload_file
@@ -119,7 +120,7 @@ def get_user_posts(id: int, session: Session = Depends(get_db)):
     return post_db_services.get_all_user_posts(session=session, user_id=id)
 
 
-@router.post('/upload')
+@router.post('/me/photo')
 def upload_profile_photo(
         file: UploadFile,
         token: str = Depends(oauth2_scheme),
@@ -138,3 +139,21 @@ def upload_profile_photo(
         return {"status": "ok", "message": f"Photo was uploaded. {success}"}
     else:
         return {"status": "failed", "message": "Upload error"}
+
+
+@router.get('/feed')
+def get_user_feed(
+        count: int,
+        offset: int,
+        token: str = Depends(oauth2_scheme),
+        session: Session = Depends(get_db)
+):
+    goals = []
+    posts = []
+    user_id = decode_token(token)["id"]
+    subs = subscription_db_services.get_subscriptions(session, user_id)
+    a = [goals.extend(sub.publisher.user_goals) for sub in subs]
+    b = [posts.extend(goal.goal_posts) for goal in goals]
+    posts = sorted(posts, key=lambda d: d.date_create, reverse=True)[count*(offset-1): count*offset]
+
+    return posts

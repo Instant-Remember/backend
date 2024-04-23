@@ -48,3 +48,9 @@ def search_users(session: Session, query: str):
         .filter(func.concat(User.first_name, " ", User.last_name).icontains(query))
         .all()
     )
+
+
+def get_feed(session: Session, count: int, offset: int, goals: list):
+    return (
+        session.query()
+    )

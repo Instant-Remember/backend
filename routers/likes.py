@@ -46,7 +46,7 @@ def like_post(
 
 
 @router.get("/post/{id}/likes")
-def get_post_likes(id: int, session: Session = Depends(get_db)) -> list:
+def get_post_likes(id: int, session: Session = Depends(get_db)):
     try:
         likes = like_db_services.get_likes(session, id)
     except NoResultFound:
