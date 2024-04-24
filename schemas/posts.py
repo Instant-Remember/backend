@@ -12,6 +12,7 @@ class PostBaseSchema(BaseModel):
 
 class PostSchema(PostBaseSchema):
     id: int
+    owner_id: int
     date_create: datetime
     date_modify: datetime
 

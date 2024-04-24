@@ -37,6 +37,7 @@ def create_post(
 
     post = payload.dict()
     now = dt.datetime.now(dt.UTC)
+    post['owner_id'] = goal.owner_id
     post['date_create'] = now
     post['date_modify'] = now
 

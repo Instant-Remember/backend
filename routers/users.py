@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile
 from fastapi.security import OAuth2PasswordBearer
+#from fastapi.encoders import jsonable_encoder
 
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import NoResultFound
@@ -150,10 +151,12 @@ def get_user_feed(
 ):
     goals = []
     posts = []
+    feed = []
     user_id = decode_token(token)["id"]
     subs = subscription_db_services.get_subscriptions(session, user_id)
     a = [goals.extend(sub.publisher.user_goals) for sub in subs]
     b = [posts.extend(goal.goal_posts) for goal in goals]
-    posts = sorted(posts, key=lambda d: d.date_create, reverse=True)[count*(offset-1): count*offset]
 
-    return posts
+    feed = sorted(posts, key=lambda d: d.date_create, reverse=True)[count*(offset-1): count*offset]
+
+    return feed

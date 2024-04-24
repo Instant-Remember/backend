@@ -10,6 +10,7 @@ class Post(Base):
     id = Column(Integer, nullable=False, primary_key=True)
     text = Column(String, nullable=False)
     progress = Column(SmallInteger, default=0)
+    owner_id = Column(Integer, nullable=False)
     goal_id = Column(Integer, ForeignKey("goals.id"))
     goal = relationship("Goal", back_populates="goal_posts")
     comments = relationship("Comment", back_populates="post")
