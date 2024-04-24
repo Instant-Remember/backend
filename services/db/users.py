@@ -49,8 +49,3 @@ def search_users(session: Session, query: str):
         .all()
     )
 
-
-def get_feed(session: Session, count: int, offset: int, goals: list):
-    return (
-        session.query()
-    )

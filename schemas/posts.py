@@ -13,6 +13,7 @@ class PostBaseSchema(BaseModel):
 class PostSchema(PostBaseSchema):
     id: int
     owner_id: int
+    likes_count: int
     date_create: datetime
     date_modify: datetime
 

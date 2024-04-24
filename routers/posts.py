@@ -48,6 +48,7 @@ def create_post(
 def get_post(id: int, session: Session = Depends(get_db)) -> PostSchema:
     try:
         post: PostSchema = post_db_services.get_post_by_id(session=session, id=id)
+        post.likes_count = len(post.likes)
 
     except NoResultFound:
         raise HTTPException(

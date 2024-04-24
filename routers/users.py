@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile
 from fastapi.security import OAuth2PasswordBearer
-#from fastapi.encoders import jsonable_encoder
 
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import NoResultFound
@@ -8,6 +7,7 @@ from sqlalchemy.exc import NoResultFound
 
 from config.db_initializer import get_db
 from schemas.users import UserSchema, UserUpdateSchema
+from schemas.posts import PostSchema
 from services.db import users as user_db_services
 from services.db import posts as post_db_services
 from services.db import subscriptions as subscription_db_services
@@ -94,7 +94,12 @@ def get_current_user_posts(
 
     user_id = decode_token(token)["id"]
 
-    return post_db_services.get_all_user_posts(session=session, user_id=user_id)
+    posts: list[PostSchema] = post_db_services.get_all_user_posts(session=session, user_id=user_id)
+    for post in posts:
+        post.likes_count = int(len(post.likes))
+        del post.likes
+
+    return posts
 
 
 @router.get("/profile/{id}/goals")
@@ -118,7 +123,12 @@ def get_user_posts(id: int, session: Session = Depends(get_db)):
             status_code=status.HTTP_404_NOT_FOUND, detail="User not found."
         )
 
-    return post_db_services.get_all_user_posts(session=session, user_id=id)
+    posts: list[PostSchema] = post_db_services.get_all_user_posts(session=session, user_id=id)
+    for post in posts:
+        post.likes_count = len(post.likes)
+        del post.likes
+
+    return posts
 
 
 @router.post('/me/photo')
@@ -151,7 +161,6 @@ def get_user_feed(
 ):
     goals = []
     posts = []
-    feed = []
     user_id = decode_token(token)["id"]
     subs = subscription_db_services.get_subscriptions(session, user_id)
     a = [goals.extend(sub.publisher.user_goals) for sub in subs]

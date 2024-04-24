@@ -95,7 +95,10 @@ def delete_goal(
 def get_goal_posts(id: int, session: Session = Depends(get_db)) -> list[PostSchema]:
 
     try:
-        posts = goal_db_services.get_posts_by_goal_id(session=session, goal_id=id)
+        posts: list[PostSchema] = goal_db_services.get_posts_by_goal_id(session=session, goal_id=id)
+        for post in posts:
+            post.likes_count = len(post.likes)
+            del post.likes
 
     except NoResultFound:
         raise HTTPException(

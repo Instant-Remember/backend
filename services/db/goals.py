@@ -3,6 +3,7 @@ from sqlalchemy import or_
 
 from models.goals import Goal
 from schemas.goals import GoalBaseSchema, GoalSchema
+from schemas.posts import PostSchema
 
 
 def create_goal(session: Session, goal: dict) -> GoalSchema:
@@ -18,7 +19,7 @@ def get_goal_by_id(session: Session, id: int) -> GoalSchema:
     return session.query(Goal).filter(Goal.id == id).one()
 
 
-def get_posts_by_goal_id(session: Session, goal_id: int) -> list[GoalSchema]:
+def get_posts_by_goal_id(session: Session, goal_id: int) -> list[PostSchema]:
     goal = session.query(Goal).filter(Goal.id == goal_id).first()
     return goal.goal_posts
 
