@@ -10,3 +10,4 @@ email-validator>=1.0.3
 pyjwt
 python-multipart
 boto3
+pytest

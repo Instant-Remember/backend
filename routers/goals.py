@@ -17,7 +17,7 @@ router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 
-@router.post("/")
+@router.post("")
 def create_goal(
     payload: GoalBaseSchema = Body(),
     token: str = Depends(oauth2_scheme),

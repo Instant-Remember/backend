@@ -18,12 +18,12 @@ router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 
-@router.post("/")
+@router.post("")
 def create_post(
     payload: PostBaseSchema = Body(),
     token: str = Depends(oauth2_scheme),
     session: Session = Depends(get_db),
-) -> PostSchema:
+):
     try:
         goal = goal_db_services.get_goal_by_id(session, payload.goal_id)
 
