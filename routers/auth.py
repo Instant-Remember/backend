@@ -33,6 +33,7 @@ def signup(
     payload.email = payload.email.lower()
     user = payload.dict()
     now = dt.datetime.now(dt.UTC)
+    user['profile_photo'] = f"https://storage.yandexcloud.net/{S3.get('BUCKET_NAME')}/default.png"
     user['date_create'] = now
     user['date_modify'] = now
 
